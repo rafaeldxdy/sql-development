@@ -48,6 +48,5 @@ This repository is a public mirror of my professional SQL development. It demons
 I'm active on various platforms where I share my journey in SQL development and tech:
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafaeldxdy)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/rafaeldxdy)
 
 > **Note:** My Instagram is a private space for my personal daily life, while LinkedIn and GitHub are my primary professional hubs.
