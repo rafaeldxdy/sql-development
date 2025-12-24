@@ -96,9 +96,9 @@ BEGIN
 			@lote                   = DFxml.value('*[lower-case(local-name())="lote"][1]','INT')
 	FROM @xml.nodes('./*') AS XMLparametros(DFxml)
 
-	SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
-	SET @endereco = '23-8-0-8'
-    SET @codigoItem = 299611
+	--SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
+	--SET @endereco = '23-8-0-8'
+ --   SET @codigoItem = 299611
 
 	/****************************************************
 	* Carrega as variáveis fixas - Não mexer
@@ -345,11 +345,11 @@ END
 	BEGIN
 	  SELECT DFcod_item_estoque as id
 	       , ';' + ISNULL(CAST(endereco AS VARCHAR), '')                                                     AS ';endereco'
-		   , ';' + ISNULL(FORMAT(CAST(DFdata_validade AS VARCHAR), 'dd/MM/yyyy'), '')                        AS ';validade'
+		   , ';' + ISNULL(FORMAT(CAST(DFdata_validade AS DATE), 'dd/MM/yyyy'), '')                        AS ';validade'
 		   , ';' + ISNULL(DFdescricao, '')                                                                   AS ';descricao'
 		   , ';' + ISNULL(DFnome_usuario, '')                                                                AS ';usuario'
 		   , ';' + ISNULL(FORMAT(DFqtde_tot_estoque, 'N', 'pt-br'), '')                                      AS ';quantidade_anterior'
-		   , ';' + ISNULL(FORMAT(DFqtde, 'N', 'pt-br'), '')                                                  AS ';quantidade_movimentada'
+		   , ';' + ISNULL(FORMAT(quantidade_movimentada, 'N', 'pt-br'), '')                                                  AS ';quantidade_movimentada'
 		   , ';' + ISNULL(FORMAT(quantidade_atual, 'N', 'pt-br'), '')                                        AS ';quantidade_atual'
 		   , ';' + ISNULL(unidade, '')                                                                       AS ';unidade'
 		   , ';' + ISNULL(CAST(DFdescricao_resumida AS VARCHAR), '')                                         AS ';motivo'
@@ -370,7 +370,7 @@ END
 		             , DFdescricao                                                  AS descricao
 		             , DFnome_usuario                                               AS usuario
 		             , FORMAT(DFqtde_tot_estoque, 'N', 'pt-br')                     AS quantidade_anterior
-		             , FORMAT(DFqtde, 'N', 'pt-br')                                 AS quantidade_movimentada
+		             , FORMAT(quantidade_movimentada, 'N', 'pt-br')                                 AS quantidade_movimentada
 		             , FORMAT(quantidade_atual, 'N', 'pt-br')                       AS quantidade_atual
 		             , unidade                                                      AS unidade
 		             , DFdescricao_resumida                                         AS motivo
