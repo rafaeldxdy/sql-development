@@ -39,7 +39,8 @@ CREATE VIEW VW_BI_Conferencia_Expedicao_Online WITH ENCRYPTION
 AS
 
 WITH Conferencia_Doca AS (
-    SELECT TBretorno_coletor_conferencia_doca.DFid_relacao                                                     AS Relacao,
+    SELECT TBretorno_coletor_conferencia_doca.DFdata_hora                                                      AS Data_conferencia,
+           TBretorno_coletor_conferencia_doca.DFid_relacao                                                     AS Relacao,
            COUNT(TBitem_retorno_coletor_conferencia_doca.DFid_item_retorno_coletor_conferencia_doca)           AS Quantidade_itens,
            SUM(CASE WHEN TBitem_retorno_coletor_conferencia_doca.DFqtde_conferido > 0 THEN 1 ELSE 0 END)       AS Quantidade_conferida,
            TBretorno_coletor_conferencia_doca.DFstatus                                                         AS [Status],
@@ -55,7 +56,8 @@ WITH Conferencia_Doca AS (
     JOIN TBequipe_operacao WITH(NOLOCK)
         ON TBequipe_operacao.DFid_operacao = TBoperacao.DFid_operacao
     WHERE TBretorno_coletor_conferencia_doca.DFdata_hora > CAST(GETDATE() AS DATE)
-    GROUP BY TBretorno_coletor_conferencia_doca.DFid_relacao,
+    GROUP BY TBretorno_coletor_conferencia_doca.DFdata_hora,
+             TBretorno_coletor_conferencia_doca.DFid_relacao,
              TBretorno_coletor_conferencia_doca.DFstatus,
              TBequipe_operacao.DFid_pessoa,
              TBretorno_coletor_conferencia_doca.DFid_usuario_critica
