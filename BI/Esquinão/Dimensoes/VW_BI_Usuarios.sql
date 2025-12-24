@@ -5,7 +5,7 @@ GO
 CREATE VIEW VW_BI_Usuarios WITH ENCRYPTION
 AS
 
-	SELECT DFid_usuario, DFnome_usuario
+	SELECT DFid_usuario, DFid_pessoa, DFnome_usuario
 	FROM TBusuario WITH(NOLOCK)
 
 GO
