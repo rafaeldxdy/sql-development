@@ -54,6 +54,7 @@ WITH Conferencia_Doca AS (
         ON TBoperacao.DFid_operacao = TBtarefa.DFid_operacao
     JOIN TBequipe_operacao WITH(NOLOCK)
         ON TBequipe_operacao.DFid_operacao = TBoperacao.DFid_operacao
+    WHERE TBretorno_coletor_conferencia_doca.DFdata_hora > '2024-01-01'
     GROUP BY TBretorno_coletor_conferencia_doca.DFid_relacao,
              TBretorno_coletor_conferencia_doca.DFstatus,
              TBequipe_operacao.DFid_pessoa,
