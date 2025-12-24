@@ -19,7 +19,7 @@
             (v) Quantidade restante;
             (v) Percentual conferido;
             (v) Status;
-            (v) Conferente;
+            (v) id_pessoa;
             (v) Crítico.
 
         * Tabelas base:
@@ -43,8 +43,8 @@ WITH Conferencia_Doca AS (
            COUNT(TBitem_retorno_coletor_conferencia_doca.DFid_item_retorno_coletor_conferencia_doca)           AS Quantidade_itens,
            SUM(CASE WHEN TBitem_retorno_coletor_conferencia_doca.DFqtde_conferido > 0 THEN 1 ELSE 0 END)       AS Quantidade_conferida,
            TBretorno_coletor_conferencia_doca.DFstatus                                                         AS [Status],
-           TBequipe_operacao.DFid_pessoa                                                                       AS Conferente,
-           TBretorno_coletor_conferencia_doca.DFid_usuario_critica                                             AS Criticado
+           TBequipe_operacao.DFid_pessoa                                                                       AS id_pessoa,
+           TBretorno_coletor_conferencia_doca.DFid_usuario_critica                                             AS id_usuario_critica
     FROM TBretorno_coletor_conferencia_doca WITH(NOLOCK)
     JOIN TBitem_retorno_coletor_conferencia_doca WITH(NOLOCK)
         ON TBretorno_coletor_conferencia_doca.DFid_retorno_coletor_conferencia_doca = TBitem_retorno_coletor_conferencia_doca.DFid_retorno_coletor_conferencia_doca
@@ -66,8 +66,8 @@ SELECT Relacao,
        (Quantidade_itens - Quantidade_conferida)                                             AS Quantidade_restante,
        FORMAT(CAST(Quantidade_conferida AS DECIMAL(10,2)) / Quantidade_itens * 100, 'N2')    AS Percentual_conferido,
        [Status],
-       Conferente,
-       Criticado
+       id_pessoa,
+       id_usuario_critica
 FROM Conferencia_Doca;
 
 GO
