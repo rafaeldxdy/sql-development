@@ -96,9 +96,9 @@ BEGIN
 			@lote                   = DFxml.value('*[lower-case(local-name())="lote"][1]','INT')
 	FROM @xml.nodes('./*') AS XMLparametros(DFxml)
 
-	--SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
-	--SET @endereco = '23-8-0-8'
- --   SET @codigoItem = 299611
+	SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
+	SET @endereco = '23-8-0-8'
+    SET @codigoItem = 299611
 
 	/****************************************************
 	* Carrega as variáveis fixas - Não mexer
@@ -221,16 +221,16 @@ IF OBJECT_ID('tempdb..#temp_dados') IS NOT NULL
 	DROP TABLE #temp_dados
 
 SELECT
-	dbo.MONTAR_ENDERECO(TBio_endereco.DFid_endereco_armazenagem)    AS endereco,
+	dbo.MONTAR_ENDERECO(TBio_endereco.DFid_endereco_armazenagem)                                                     AS endereco,
 	TBmovto_endereco.DFdata_validade,
 	TBmovto_endereco.DFcod_item_estoque,
 	TBitem_estoque.DFdescricao,
 	TBusuario.DFnome_usuario,
-	CAST(TBmovto_endereco.DFqtde_tot_estoque AS DECIMAL(18,4))      AS DFqtde_tot_estoque,           -- quantidade_anterior
-	CASE WHEN TBio_endereco.DFtipo = 'S' THEN (TBmovto_endereco.DFqtde * (-1)) END AS quantidade_movimentada, -- quantidade_movimentada
+	CAST(TBmovto_endereco.DFqtde_tot_estoque AS DECIMAL(18,4))                                                       AS DFqtde_tot_estoque,     -- quantidade_anterior
+	CASE WHEN TBio_endereco.DFtipo = 'S' THEN (TBmovto_endereco.DFqtde * (-1)) END                                   AS quantidade_movimentada, -- quantidade_movimentada
 	CASE WHEN TBio_endereco.DFtipo = 'E' THEN (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde)
-	                                     ELSE (TBmovto_endereco.DFqtde_tot_estoque - TBmovto_endereco.DFqtde) END AS quantidade_atual,             -- quantidade_atualTBunidade.DFdescricao                                           AS unidade,
-	TBunidade.DFdescricao                                           AS unidade,
+	                                     ELSE (TBmovto_endereco.DFqtde_tot_estoque - TBmovto_endereco.DFqtde) END    AS quantidade_atual,       -- quantidade_atual
+	TBunidade.DFdescricao                                                                                            AS unidade,
 	TBorigem_movto_endereco.DFdescricao_resumida,
 	TBmovto_endereco.DFdata_conferida,
 	TBmovto_endereco.DFdata_hora_movto_endereco,
@@ -249,22 +249,22 @@ FROM
 	JOIN #enderecos WITH(NOLOCK) ON TBendereco_armazenagem.DFid_endereco_armazenagem = #enderecos.id_endereco
 WHERE
      ISNULL(@endereco, '') = '' OR TBendereco_armazenagem.DFid_endereco_armazenagem IN (SELECT id_endereco FROM #enderecos)    -- Endereço armazenagem
-	AND (ISNULL(@lado, '') = ''                                                                                                      -- Lado
+	AND (ISNULL(@lado, '') = ''                                                                                                -- Lado
 		 OR (@lado = 'Par'   AND TBendereco_armazenagem.DFpredio % 2 = 0)												     
 		 OR (@lado = 'Ímpar' AND TBendereco_armazenagem.DFpredio % 2 <> 0))												     
-	AND (ISNULL(@condicaoEstocagem, '') = '' OR TBendereco_armazenagem.DFcondicao = @condicaoEstocagem)                          -- condicaoEstocagem
-	AND (ISNULL(@quantidadeEstocagem, '') = ''                                                                                   -- quantidadeEstocagem
-		OR (@quantidadeEstocagem = 'Existente' AND (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde) > 0)          
-		OR (@quantidadeEstocagem = 'Vazio' AND (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde) = 0))             
-	AND (ISNULL(@observacoes, '') = '' OR TBmovto_endereco.DFobs = @observacoes)                                                 -- Observações
-	AND (ISNULL(@usuario, '') = '' OR TBusuario.DFnome_usuario = @usuario)                                                       -- Usuário
-	AND (ISNULL(@motivo, '') = '' OR TBorigem_movto_endereco.DFdescricao_resumida = @motivo)                                     -- Motivo
-	AND (ISNULL(@codigoItem, '') = '' OR TBmovto_endereco.DFcod_item_estoque = @codigoItem)                                      -- Item
-	AND (ISNULL(@origem, '') = '' OR TBorigem_movto_endereco.DForigem = @origem)                                                 -- Origem
-	AND (ISNULL(@tipoMovimento, '') = '' OR TBmovto_endereco.DFtipo = @tipoMovimento)                                            -- Tipo de movimento
-	AND (ISNULL(@tipoEstoque, '') = '' OR TBendereco_armazenagem.DFid_tipo_estoque = @tipoEstoque)                               -- Tipo de estoque
-	AND (ISNULL(@centroDistribuicao, '') = '' OR TBendereco_armazenagem.DFcod_empresa = @centroDistribuicao)                     -- Centro de distribuição
-    AND (ISNULL(@lote, '') = '' OR TBitem_endereco_armazenagem_lote.DFlote = @lote)                                              -- Lote
+	AND (ISNULL(@condicaoEstocagem, '') = '' OR TBendereco_armazenagem.DFcondicao = @condicaoEstocagem)                        -- condicaoEstocagem
+	AND (ISNULL(@quantidadeEstocagem, '') = ''                                                                                 -- quantidadeEstocagem
+		OR (@quantidadeEstocagem = 'Existente' AND (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde) > 0)        
+		OR (@quantidadeEstocagem = 'Vazio' AND (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde) = 0))           
+	AND (ISNULL(@observacoes, '') = '' OR TBmovto_endereco.DFobs = @observacoes)                                               -- Observações
+	AND (ISNULL(@usuario, '') = '' OR TBusuario.DFnome_usuario = @usuario)                                                     -- Usuário
+	AND (ISNULL(@motivo, '') = '' OR TBorigem_movto_endereco.DFdescricao_resumida = @motivo)                                   -- Motivo
+	AND (ISNULL(@codigoItem, '') = '' OR TBmovto_endereco.DFcod_item_estoque = @codigoItem)                                    -- Item
+	AND (ISNULL(@origem, '') = '' OR TBorigem_movto_endereco.DForigem = @origem)                                               -- Origem
+	AND (ISNULL(@tipoMovimento, '') = '' OR TBmovto_endereco.DFtipo = @tipoMovimento)                                          -- Tipo de movimento
+	AND (ISNULL(@tipoEstoque, '') = '' OR TBendereco_armazenagem.DFid_tipo_estoque = @tipoEstoque)                             -- Tipo de estoque
+	AND (ISNULL(@centroDistribuicao, '') = '' OR TBendereco_armazenagem.DFcod_empresa = @centroDistribuicao)                   -- Centro de distribuição
+    AND (ISNULL(@lote, '') = '' OR TBitem_endereco_armazenagem_lote.DFlote = @lote)                                            -- Lote
 ORDER BY DFdata_hora_movto_endereco
 
 IF EXISTS (SELECT * FROM #TBperiodo)
@@ -344,18 +344,18 @@ END
 	IF @exportar = 'csv'
 	BEGIN
 	  SELECT DFcod_item_estoque as id
-	       , ';' + ISNULL(CAST(endereco AS VARCHAR), '')                                                     AS ';endereco'
-		   , ';' + ISNULL(FORMAT(CAST(DFdata_validade AS DATE), 'dd/MM/yyyy'), '')                        AS ';validade'
-		   , ';' + ISNULL(DFdescricao, '')                                                                   AS ';descricao'
-		   , ';' + ISNULL(DFnome_usuario, '')                                                                AS ';usuario'
-		   , ';' + ISNULL(FORMAT(DFqtde_tot_estoque, 'N', 'pt-br'), '')                                      AS ';quantidade_anterior'
-		   , ';' + ISNULL(FORMAT(quantidade_movimentada, 'N', 'pt-br'), '')                                                  AS ';quantidade_movimentada'
-		   , ';' + ISNULL(FORMAT(quantidade_atual, 'N', 'pt-br'), '')                                        AS ';quantidade_atual'
-		   , ';' + ISNULL(unidade, '')                                                                       AS ';unidade'
-		   , ';' + ISNULL(CAST(DFdescricao_resumida AS VARCHAR), '')                                         AS ';motivo'
-		   , ';' + ISNULL(CAST(DFdata_conferida AS VARCHAR), '')              AS ';data_conferida'
-		   , ';' + ISNULL(CAST(DFdata_hora_movto_endereco AS VARCHAR), '')    AS ';data_movimentacao'
-		   , ';' + ISNULL(DFobs, '')                                                                         AS ';observacao'
+	       , ';' + ISNULL(CAST(endereco AS VARCHAR), '')                                 AS ';endereco'
+		   , ';' + ISNULL(FORMAT(CAST(DFdata_validade AS DATE), 'dd/MM/yyyy'), '')       AS ';validade'
+		   , ';' + ISNULL(DFdescricao, '')                                               AS ';descricao'
+		   , ';' + ISNULL(DFnome_usuario, '')                                            AS ';usuario'
+		   , ';' + ISNULL(FORMAT(DFqtde_tot_estoque, 'N', 'pt-br'), '')                  AS ';quantidade_anterior'
+		   , ';' + ISNULL(FORMAT(quantidade_movimentada, 'N', 'pt-br'), '')              AS ';quantidade_movimentada'
+		   , ';' + ISNULL(FORMAT(quantidade_atual, 'N', 'pt-br'), '')                    AS ';quantidade_atual'
+		   , ';' + ISNULL(unidade, '')                                                   AS ';unidade'
+		   , ';' + ISNULL(CAST(DFdescricao_resumida AS VARCHAR), '')                     AS ';motivo'
+		   , ';' + ISNULL(CAST(DFdata_conferida AS VARCHAR), '')                         AS ';data_conferida'
+		   , ';' + ISNULL(CAST(DFdata_hora_movto_endereco AS VARCHAR), '')               AS ';data_movimentacao'
+		   , ';' + ISNULL(DFobs, '')                                                     AS ';observacao'
 	   FROM #temp_resultados
 	END
 	ELSE
@@ -370,7 +370,7 @@ END
 		             , DFdescricao                                                  AS descricao
 		             , DFnome_usuario                                               AS usuario
 		             , FORMAT(DFqtde_tot_estoque, 'N', 'pt-br')                     AS quantidade_anterior
-		             , FORMAT(quantidade_movimentada, 'N', 'pt-br')                                 AS quantidade_movimentada
+		             , FORMAT(quantidade_movimentada, 'N', 'pt-br')                 AS quantidade_movimentada
 		             , FORMAT(quantidade_atual, 'N', 'pt-br')                       AS quantidade_atual
 		             , unidade                                                      AS unidade
 		             , DFdescricao_resumida                                         AS motivo
