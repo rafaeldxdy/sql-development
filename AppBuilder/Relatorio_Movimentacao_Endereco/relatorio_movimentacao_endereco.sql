@@ -96,9 +96,9 @@ BEGIN
 			@lote                   = DFxml.value('*[lower-case(local-name())="lote"][1]','INT')
 	FROM @xml.nodes('./*') AS XMLparametros(DFxml)
 
-	SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
-	SET @endereco = '23-8-0-8'
-    SET @codigoItem = 299611
+	-- SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
+	-- SET @endereco = '23-8-0-8'
+    -- SET @codigoItem = 299611
 
 	/****************************************************
 	* Carrega as variáveis fixas - Não mexer
@@ -169,18 +169,6 @@ INNER JOIN TBcentro_distribuicao  WITH(NOLOCK)
 							ORDER BY CAST(itens AS SMALLDATETIME) DESC)
 		END
 
-	/**********************************************************************************************
-	* FILTRO DE ENDEREÇO - @endereco
-	**********************************************************************************************/
-
-	IF OBJECT_ID('tempdb.dbo.#enderecos') IS NOT NULL 
-		DROP TABLE #enderecos
-
-	CREATE TABLE #enderecos(
-		id_endereco INT)
-
-	EXEC sp_filtro_Endereco_app_builder @endereco, @tabela_retorno = '#enderecos';
-
 	/***************************************************
 	* TRATAMENTO PARA PAGINAÇÃO:
 	***************************************************/
@@ -220,8 +208,20 @@ INNER JOIN TBcentro_distribuicao  WITH(NOLOCK)
 IF OBJECT_ID('tempdb..#temp_dados') IS NOT NULL
 	DROP TABLE #temp_dados
 
+;WITH EnderecoCTE AS (
+	SELECT
+		DFid_endereco_armazenagem,
+		CONCAT(
+			RIGHT('000' + CAST(DFrua AS VARCHAR(3)), 3), '-',
+			RIGHT('000' + CAST(DFpredio AS VARCHAR(3)), 3), '-',
+			RIGHT('000' + CAST(DFnivel AS VARCHAR(3)), 3), '-',
+			RIGHT('000' + CAST(DFapto AS VARCHAR(3)), 3)
+		) AS DFendereco
+	FROM TBendereco_armazenagem
+)
+
 SELECT
-	dbo.MONTAR_ENDERECO(TBio_endereco.DFid_endereco_armazenagem)                                                     AS endereco,
+	EnderecoCTE.DFendereco                                                                                           AS endereco,
 	TBmovto_endereco.DFdata_validade,
 	TBmovto_endereco.DFcod_item_estoque,
 	TBitem_estoque.DFdescricao,
@@ -246,10 +246,10 @@ FROM
 	JOIN TBio_endereco WITH(NOLOCK) ON TBmovto_endereco.DFid_movto_endereco = TBio_endereco.DFid_movto_endereco
 	JOIN TBendereco_armazenagem WITH(NOLOCK) ON TBio_endereco.DFid_endereco_armazenagem = TBendereco_armazenagem.DFid_endereco_armazenagem
 	JOIN TBitem_endereco_armazenagem_lote WITH(NOLOCK) ON TBendereco_armazenagem.DFid_endereco_armazenagem = TBitem_endereco_armazenagem_lote.DFid_item_endereco_armazenagem
-	JOIN #enderecos WITH(NOLOCK) ON TBendereco_armazenagem.DFid_endereco_armazenagem = #enderecos.id_endereco
+	JOIN EnderecoCTE WITH(NOLOCK) ON EnderecoCTE.DFid_endereco_armazenagem = TBendereco_armazenagem.DFid_endereco_armazenagem
+	JOIN #TBperiodo ON TBmovto_endereco.DFdata_hora_movto_endereco BETWEEN #TBperiodo.DtIni AND #TBperiodo.DtFim
 WHERE
-     ISNULL(@endereco, '') = '' OR TBendereco_armazenagem.DFid_endereco_armazenagem IN (SELECT id_endereco FROM #enderecos)    -- Endereço armazenagem
-	AND (ISNULL(@lado, '') = ''                                                                                                -- Lado
+    (ISNULL(@lado, '') = ''                                                                                                    -- Lado
 		 OR (@lado = 'Par'   AND TBendereco_armazenagem.DFpredio % 2 = 0)												     
 		 OR (@lado = 'Ímpar' AND TBendereco_armazenagem.DFpredio % 2 <> 0))												     
 	AND (ISNULL(@condicaoEstocagem, '') = '' OR TBendereco_armazenagem.DFcondicao = @condicaoEstocagem)                        -- condicaoEstocagem
@@ -266,14 +266,6 @@ WHERE
 	AND (ISNULL(@centroDistribuicao, '') = '' OR TBendereco_armazenagem.DFcod_empresa = @centroDistribuicao)                   -- Centro de distribuição
     AND (ISNULL(@lote, '') = '' OR TBitem_endereco_armazenagem_lote.DFlote = @lote)                                            -- Lote
 ORDER BY DFdata_hora_movto_endereco
-
-IF EXISTS (SELECT * FROM #TBperiodo)
-BEGIN
-	DELETE D
-	FROM #temp_dados D
-	JOIN #tbperiodo P 
-		ON D.DFdata_hora_movto_endereco NOT BETWEEN P.DtIni AND P.DtFim
-END
 
 	/***************************************************
     * FIM DO PROCESSO
@@ -400,14 +392,14 @@ BEGIN TRAN
 '
 <Parametros>
   <periodo>2025-12-16 00:00, 2025-12-16 23:59</periodo>
-  <endereco>23-8-0-8</endereco>
+  <endereco></endereco>
   <lado></lado>
   <condicaoEstocagem></condicaoEstocagem>
   <quantidadeEstocagem></quantidadeEstocagem>
   <observacoes></observacoes>
   <usuario></usuario>
   <motivo></motivo>
-  <codigoItem>299611</codigoItem>
+  <codigoItem></codigoItem>
   <origem></origem>
   <tipoMovimento></tipoMovimento>
   <tipoEstoque></tipoEstoque>
