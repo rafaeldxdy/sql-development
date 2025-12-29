@@ -6,6 +6,7 @@ CREATE VIEW VW_BI_Ressuprimento WITH ENCRYPTION
 AS
 
 SELECT DISTINCT      
+      TBordem_movimentacao.DFcod_empresa                                                                                  AS [Empresa],
       TBordem_movimentacao.DFdata_criacao                                                                                 AS [Data Criação],
       TBordem_movimentacao.DFcod_item_estoque                                                                             AS [Código Item],
       TBordem_movimentacao.DFid_endereco_saida                                                                            AS [ID Endereço Saída],

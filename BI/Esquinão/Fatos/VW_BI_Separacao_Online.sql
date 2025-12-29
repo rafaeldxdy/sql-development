@@ -6,6 +6,8 @@ CREATE VIEW VW_BI_Separacao_Online WITH ENCRYPTION
 AS
 
 SELECT DISTINCT
+      TBordem_movimentacao.DFcod_empresa                                                                                                   AS [Empresa],
+      TBpedido_venda.DFcod_empresa_destinataria                                                                                            AS [Empresa Destinatária],
       TBordem_movimentacao.DFdata_criacao                                                                                                  AS [Data Criação],
       TBordem_movimentacao.DFcod_item_estoque                                                                                              AS [Código Item],
       TBordem_movimentacao.DFid_endereco_saida                                                                                             AS [ID Endereço Saída],
@@ -25,6 +27,8 @@ FROM
     JOIN VWpreco WITH(NOLOCK) ON VWpreco.DFcod_item_estoque = TBordem_movimentacao.DFcod_item_estoque
     JOIN TBunidade_item_estoque WITH(NOLOCK) ON TBunidade_item_estoque.DFcod_item_estoque = TBordem_movimentacao.DFcod_item_estoque
         AND TBunidade_item_estoque.DFid_unidade_item_estoque = VWpreco.DFid_unidade_item_estoque
+    JOIN TBitem_pedido_venda WITH(NOLOCK) ON TBitem_pedido_venda.DFid_item_pedido_venda = TBordem_movimentacao.DFid_item_pedido_venda
+    JOIN TBpedido_venda WITH(NOLOCK) ON TBpedido_venda.DFcod_pedido_venda = TBitem_pedido_venda.DFcod_pedido_venda
 WHERE
     TBordem_movimentacao.DFdata_criacao >= CAST(GETDATE() AS DATE)
     AND DFtipo_movimento = 'Saida'
