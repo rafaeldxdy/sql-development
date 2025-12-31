@@ -2,8 +2,8 @@
     AUTOR..................: Rafael Ribeiro
 	AREA...................: Logística
 	MODULO.................: WMS
-	DATA/HORA CRIAÇÂO......: 24/12/2025 15:26
-    DATA/HORA MODIFICAÇÂO..: 31/12/2025 11:11
+	DATA/HORA CRIAÇÂO......: 24/12/2025 15:26 PM
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 11:11 AM
 	OBJETIVO...............: Relatório sintético da Montagem de Carga para BI.
 
     Dados:

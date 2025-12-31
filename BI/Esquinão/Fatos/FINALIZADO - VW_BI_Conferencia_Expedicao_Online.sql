@@ -2,8 +2,8 @@
     AUTOR..................: Rafael Ribeiro
 	AREA...................: Logística
 	MODULO.................: WMS
-	DATA/HORA CRIAÇÂO......: 24/12/2025 13:35
-    DATA/HORA MODIFICAÇÂO..: 31/12/2025 11:19
+	DATA/HORA CRIAÇÂO......: 24/12/2025 13:35 PM
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 11:19 AM
 	OBJETIVO...............: relatório sintético da conferência de expedição para BI.
 
     Dados:

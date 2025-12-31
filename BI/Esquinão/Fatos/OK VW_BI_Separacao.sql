@@ -34,11 +34,11 @@
         TBpedido_venda.
 */
 
-IF DBO.OBJECT_ID('VW_BI_Separacao_Online') IS NOT NULL 
-    DROP VIEW VW_BI_Separacao_Online
+IF DBO.OBJECT_ID('VW_BI_Separacao') IS NOT NULL 
+    DROP VIEW VW_BI_Separacao
 GO
 
-CREATE VIEW VW_BI_Separacao_Online WITH ENCRYPTION
+CREATE VIEW VW_BI_Separacao WITH ENCRYPTION
 AS
 
 SELECT DISTINCT
@@ -66,7 +66,7 @@ FROM
     JOIN TBitem_pedido_venda WITH(NOLOCK) ON TBitem_pedido_venda.DFid_item_pedido_venda = TBordem_movimentacao.DFid_item_pedido_venda
     JOIN TBpedido_venda WITH(NOLOCK) ON TBpedido_venda.DFcod_pedido_venda = TBitem_pedido_venda.DFcod_pedido_venda
 WHERE
-    TBordem_movimentacao.DFdata_criacao >= CAST(GETDATE() AS DATE)
+    TBordem_movimentacao.DFdata_criacao >= '2024-01-01'
     AND DFtipo_movimento = 'Saida'
     AND TBunidade_item_estoque.DFfator_conversao = 1
 

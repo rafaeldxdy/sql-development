@@ -2,8 +2,8 @@
     AUTOR..................: Rafael Ribeiro
 	AREA...................: Logística
 	MODULO.................: WMS
-	DATA/HORA CRIAÇÂO......: 24/12/2025 16:00
-    DATA/HORA MODIFICAÇÂO..: 31/12/2025 12:07
+	DATA/HORA CRIAÇÂO......: 24/12/2025 16:00 PM
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 12:07 AM
 	OBJETIVO...............: Relatório analítico de Conferência Cega para BI.
 
     Dados:
