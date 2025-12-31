@@ -1,4 +1,9 @@
 /*
+	TASKS:
+
+	Ajustar motivo da movimentação de endereço, origem e tipo de movimento
+	Ajustar performance
+
 	Nomenclaturas usadas nos projetos:
 
 	sp_Detalhar_NomeDaPagina
@@ -96,9 +101,9 @@ BEGIN
 			@lote                   = DFxml.value('*[lower-case(local-name())="lote"][1]','INT')
 	FROM @xml.nodes('./*') AS XMLparametros(DFxml)
 
-	SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
-	SET @endereco = '23-8-0-8'
-    SET @codigoItem = 299611
+	-- SET @periodo = '2025-12-16 00:00, 2025-12-16 23:59'
+	-- SET @endereco = '23-8-0-8'
+    -- SET @codigoItem = 299611
 
 	/****************************************************
 	* Carrega as variáveis fixas - Não mexer
@@ -247,16 +252,15 @@ FROM
 	JOIN TBendereco_armazenagem WITH(NOLOCK) ON TBio_endereco.DFid_endereco_armazenagem = TBendereco_armazenagem.DFid_endereco_armazenagem
 	JOIN TBitem_endereco_armazenagem_lote WITH(NOLOCK) ON TBendereco_armazenagem.DFid_endereco_armazenagem = TBitem_endereco_armazenagem_lote.DFid_item_endereco_armazenagem
 	JOIN #enderecos WITH(NOLOCK) ON TBendereco_armazenagem.DFid_endereco_armazenagem = #enderecos.id_endereco
+	JOIN #TBperiodo ON TBmovto_endereco.DFdata_hora_movto_endereco BETWEEN #TBperiodo.DtIni AND #TBperiodo.DtFim
 WHERE
-     ISNULL(@endereco, '') = '' OR TBendereco_armazenagem.DFid_endereco_armazenagem IN (SELECT id_endereco FROM #enderecos)    -- Endereço armazenagem
-	AND (ISNULL(@lado, '') = ''                                                                                                -- Lado
+    (ISNULL(@lado, '') = ''                                                                                                    -- Lado
 		 OR (@lado = 'Par'   AND TBendereco_armazenagem.DFpredio % 2 = 0)												     
 		 OR (@lado = 'Ímpar' AND TBendereco_armazenagem.DFpredio % 2 <> 0))												     
 	AND (ISNULL(@condicaoEstocagem, '') = '' OR TBendereco_armazenagem.DFcondicao = @condicaoEstocagem)                        -- condicaoEstocagem
 	AND (ISNULL(@quantidadeEstocagem, '') = ''                                                                                 -- quantidadeEstocagem
 		OR (@quantidadeEstocagem = 'Existente' AND (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde) > 0)        
 		OR (@quantidadeEstocagem = 'Vazio' AND (TBmovto_endereco.DFqtde_tot_estoque + TBmovto_endereco.DFqtde) = 0))           
-	AND (ISNULL(@observacoes, '') = '' OR TBmovto_endereco.DFobs = @observacoes)                                               -- Observações
 	AND (ISNULL(@usuario, '') = '' OR TBusuario.DFnome_usuario = @usuario)                                                     -- Usuário
 	AND (ISNULL(@motivo, '') = '' OR TBorigem_movto_endereco.DFdescricao_resumida = @motivo)                                   -- Motivo
 	AND (ISNULL(@codigoItem, '') = '' OR TBmovto_endereco.DFcod_item_estoque = @codigoItem)                                    -- Item
@@ -266,14 +270,6 @@ WHERE
 	AND (ISNULL(@centroDistribuicao, '') = '' OR TBendereco_armazenagem.DFcod_empresa = @centroDistribuicao)                   -- Centro de distribuição
     AND (ISNULL(@lote, '') = '' OR TBitem_endereco_armazenagem_lote.DFlote = @lote)                                            -- Lote
 ORDER BY DFdata_hora_movto_endereco
-
-IF EXISTS (SELECT * FROM #TBperiodo)
-BEGIN
-	DELETE D
-	FROM #temp_dados D
-	JOIN #tbperiodo P 
-		ON D.DFdata_hora_movto_endereco NOT BETWEEN P.DtIni AND P.DtFim
-END
 
 	/***************************************************
     * FIM DO PROCESSO
@@ -399,15 +395,14 @@ BEGIN TRAN
   DECLARE @xml XML =
 '
 <Parametros>
-  <periodo>2025-12-16 00:00, 2025-12-16 23:59</periodo>
-  <endereco>23-8-0-8</endereco>
+  <periodo>2025-12-01 00:00, 2025-12-31 23:59</periodo>
+  <endereco></endereco>
   <lado></lado>
   <condicaoEstocagem></condicaoEstocagem>
   <quantidadeEstocagem></quantidadeEstocagem>
-  <observacoes></observacoes>
   <usuario></usuario>
   <motivo></motivo>
-  <codigoItem>299611</codigoItem>
+  <codigoItem></codigoItem>
   <origem></origem>
   <tipoMovimento></tipoMovimento>
   <tipoEstoque></tipoEstoque>

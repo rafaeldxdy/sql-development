@@ -13,6 +13,7 @@
 
         * Dados:
 
+            () Data
             (v) Relação (cada relação é um pallet);
             (v) Quantidade de itens;
             (v) Quantidade conferida;
@@ -55,7 +56,7 @@ WITH Conferencia_Doca AS (
         ON TBoperacao.DFid_operacao = TBtarefa.DFid_operacao
     JOIN TBequipe_operacao WITH(NOLOCK)
         ON TBequipe_operacao.DFid_operacao = TBoperacao.DFid_operacao
-    WHERE TBretorno_coletor_conferencia_doca.DFdata_hora > CAST(GETDATE() AS DATE)
+    WHERE TBretorno_coletor_conferencia_doca.DFdata_hora >= CAST(GETDATE() AS DATE)
     GROUP BY TBretorno_coletor_conferencia_doca.DFdata_hora,
              TBretorno_coletor_conferencia_doca.DFid_relacao,
              TBretorno_coletor_conferencia_doca.DFstatus,

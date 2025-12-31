@@ -12,7 +12,8 @@
     Objetivo: criar relatório sintético da Montagem de Carga, contendo os seguintes dados:
 
         * Dados:
-
+            
+            () Data;
             (v) Data de criação da carga;
             (v) Código da carga;
             (v) Quantidade de pedidos;

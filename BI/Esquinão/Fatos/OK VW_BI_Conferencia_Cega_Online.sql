@@ -1,3 +1,8 @@
+/*
+    Campo de devolução (sim/não)
+    Data
+*/
+
 IF DBO.OBJECT_ID('VW_BI_Conferencia_Cega') IS NOT NULL 
     DROP VIEW VW_BI_Conferencia_Cega
 GO
