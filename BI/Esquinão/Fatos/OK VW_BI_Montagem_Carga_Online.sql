@@ -1,37 +1,31 @@
 /*
-    Documentação:
+    AUTOR..................: Rafael Ribeiro
+	AREA...................: Logística
+	MODULO.................: WMS
+	DATA/HORA CRIAÇÂO......: 24/12/2025 15:26
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 
+	OBJETIVO: Relatório sintético da Montagem de Carga para BI.
 
-	AUTOR......: Rafael Ribeiro
-	AREA.......: Logística
-	MODULO.....: WMS
-	DATA/HORA..: 24/12/2025 15:26
-    VERSÃO.....: 1.0
-	
-	Função.....: Analista de Suporte Técnico Jr.
+    Dados:
 
-    Objetivo: criar relatório sintético da Montagem de Carga, contendo os seguintes dados:
+        (v) Data de criação da carga;
+        (v) Código da carga;
+        (v) Quantidade de pedidos;
+        (v) Quantidade de pallets;
+        (v) Capacidade do veículo;
+        (v) Peso carga;
+        (v) Volume carga;
+        (v) Valor carga;
+        (v) Status da carga;
+        (v) Quem a montou.
 
-        * Dados:
-            
-            () Data;
-            (v) Data de criação da carga;
-            (v) Código da carga;
-            (v) Quantidade de pedidos;
-            (v) Quantidade de pallets;
-            (v) Capacidade do veículo;
-            (v) Peso carga;
-            (v) Volume carga;
-            (v) Valor carga;
-            (v) Status da carga;
-            (v) Quem a montou.
+    Tabelas base:
 
-        * Tabelas base:
-
-            - TBcarga
-            - TBpedido_venda_logistica
-            - TBveiculo
-            - TBcarroceria
-            - TBpalete_usado
+        TBcarga
+        TBpedido_venda_logistica
+        TBveiculo
+        TBcarroceria
+        TBpalete_usado
 */
 
 IF DBO.OBJECT_ID('VW_BI_Montagem_Carga_Online') IS NOT NULL 
@@ -53,20 +47,23 @@ WITH Montagem_Carga AS (
         Tbcarga.DFvalor                                        AS Valor_carga,
         TBcarga.DFstatus                                       AS Status_carga, 
         TBpalete_usado.DFid_usuario_carregamento               AS id_pessoa_carregamento
-    FROM TBcarga WITH(NOLOCK)
-    JOIN TBpedido_venda_logistica WITH(NOLOCK) ON TBpedido_venda_logistica.DFcod_carga = TBcarga.DFcod_carga
-    JOIN TBveiculo WITH(NOLOCK) ON TBveiculo.DFid_veiculo = TBcarga.DFid_veiculo
-    JOIN TBcarroceria WITH(NOLOCK) ON TBcarroceria.DFid_carroceria = TBveiculo.DFid_carroceria
-    JOIN TBpalete_usado WITH(NOLOCK) ON TBpalete_usado.DFcod_carga = TBcarga.DFcod_carga
-    WHERE TBcarga.DFdata_criacao > CAST(GETDATE() AS DATE)
-    GROUP BY TBcarga.DFdata_criacao,
-             TBcarga.DFcod_carga,
-             TBcarroceria.DFnum_paletes,
-             Tbcarga.DFpeso,
-             Tbcarga.DFvolume,
-             Tbcarga.DFvalor,
-             TBcarga.DFstatus,
-             TBpalete_usado.DFid_usuario_carregamento
+    FROM 
+        TBcarga WITH(NOLOCK)
+        JOIN TBpedido_venda_logistica WITH(NOLOCK) ON TBpedido_venda_logistica.DFcod_carga = TBcarga.DFcod_carga
+        JOIN TBveiculo WITH(NOLOCK) ON TBveiculo.DFid_veiculo = TBcarga.DFid_veiculo
+        JOIN TBcarroceria WITH(NOLOCK) ON TBcarroceria.DFid_carroceria = TBveiculo.DFid_carroceria
+        JOIN TBpalete_usado WITH(NOLOCK) ON TBpalete_usado.DFcod_carga = TBcarga.DFcod_carga
+    WHERE 
+        TBcarga.DFdata_criacao > CAST(GETDATE() AS DATE)
+    GROUP BY 
+        TBcarga.DFdata_criacao,
+        TBcarga.DFcod_carga,
+        TBcarroceria.DFnum_paletes,
+        Tbcarga.DFpeso,
+        Tbcarga.DFvolume,
+        Tbcarga.DFvalor,
+        TBcarga.DFstatus,
+        TBpalete_usado.DFid_usuario_carregamento
 )
 
 SELECT *
