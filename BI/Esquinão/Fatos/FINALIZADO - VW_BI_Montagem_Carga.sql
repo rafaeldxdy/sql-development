@@ -3,8 +3,8 @@
 	AREA...................: Logística
 	MODULO.................: WMS
 	DATA/HORA CRIAÇÂO......: 24/12/2025 15:26
-    DATA/HORA MODIFICAÇÂO..: 31/12/2025 
-	OBJETIVO: Relatório sintético da Montagem de Carga para BI.
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 11:11
+	OBJETIVO...............: Relatório sintético da Montagem de Carga para BI.
 
     Dados:
 
@@ -28,11 +28,11 @@
         TBpalete_usado
 */
 
-IF DBO.OBJECT_ID('VW_BI_Montagem_Carga_Online') IS NOT NULL 
-    DROP VIEW VW_BI_Montagem_Carga_Online
+IF DBO.OBJECT_ID('VW_BI_Montagem_Carga') IS NOT NULL 
+    DROP VIEW VW_BI_Montagem_Carga
 GO
 
-CREATE VIEW VW_BI_Montagem_Carga_Online WITH ENCRYPTION
+CREATE VIEW VW_BI_Montagem_Carga WITH ENCRYPTION
 AS
 
 WITH Montagem_Carga AS (
@@ -54,7 +54,7 @@ WITH Montagem_Carga AS (
         JOIN TBcarroceria WITH(NOLOCK) ON TBcarroceria.DFid_carroceria = TBveiculo.DFid_carroceria
         JOIN TBpalete_usado WITH(NOLOCK) ON TBpalete_usado.DFcod_carga = TBcarga.DFcod_carga
     WHERE 
-        TBcarga.DFdata_criacao > CAST(GETDATE() AS DATE)
+        TBcarga.DFdata_criacao >= '2024-01-01'
     GROUP BY 
         TBcarga.DFdata_criacao,
         TBcarga.DFcod_carga,

@@ -4,7 +4,7 @@
 	MODULO.................: WMS
 	DATA/HORA CRIAÇÂO......: 24/12/2025 15:26
     DATA/HORA MODIFICAÇÂO..: 31/12/2025 10:57
-	OBJETIVO: Relatório analítico de armazenamento para BI.
+	OBJETIVO...............: Relatório analítico de armazenamento para BI.
 
     Dados:
 

@@ -4,7 +4,7 @@
 	MODULO.................: WMS
 	DATA/HORA CRIAÇÂO......: 24/12/2025 15:26
     DATA/HORA MODIFICAÇÂO..: 31/12/2025 10:57
-	OBJETIVO: Relatório analítico de armazenamento para BI.
+	OBJETIVO...............: Relatório analítico de armazenamento para BI.
 
     Dados:
 
@@ -67,7 +67,7 @@ FROM
     LEFT JOIN TBordem_movimentacao WITH(NOLOCK) ON TBordem_movimentacao.DFid_item_conferencia = TBitem_conferencia.DFid_item_conferencia
     JOIN VWpreco WITH(NOLOCK) ON VWpreco.DFcod_item_estoque = TBordem_movimentacao.DFcod_item_estoque
 WHERE 
-    TBconferencia.DFdata_emissao > '2024-01-01'
+    TBconferencia.DFdata_emissao >= '2024-01-01'
     AND TBordem_movimentacao.DFtipo_movimento = 'Entrada'
 GROUP BY 
     TBordem_movimentacao.DFdata_criacao,
