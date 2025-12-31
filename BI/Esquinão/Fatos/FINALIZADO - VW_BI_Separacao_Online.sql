@@ -3,7 +3,7 @@
 	AREA...................: Logística
 	MODULO.................: WMS
 	DATA/HORA CRIAÇÂO......: 24/12/2025 11:02 AM
-    DATA/HORA MODIFICAÇÂO..: 31/12/2025 
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 13:26 PM
 	OBJETIVO...............: Relatório analítico de separação para BI.
 
     Dados:

@@ -1,8 +1,40 @@
-IF DBO.OBJECT_ID('VW_BI_Ressuprimento_Online') IS NOT NULL 
-    DROP VIEW VW_BI_Ressuprimento_Online
+/*
+    AUTOR..................: Rafael Ribeiro
+	AREA...................: Logística
+	MODULO.................: WMS
+	DATA/HORA CRIAÇÂO......: 24/12/2025 11:02 AM
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 13:30 PM
+	OBJETIVO...............: Relatório analítico de ressuprimento para BI.
+
+    Dados:
+
+        (v) Data Criação;
+        (v) Código Item;
+        (v) ID Endereço Saída;
+        (v) ID Endereço Entrada;
+        (v) Quantidade Endereço;
+        (v) Quantidade Abastecimento;
+        (v) Quantidade Cortada;
+        (v) Valor Custo;
+        (v) Status;
+        (v) Início Operação;
+        (v) Fim Operação;
+        (v) Usuário Criação;
+        (v) Usuário Operação;
+        (v) Usuário Cancelamento.
+
+    Tabelas base:
+
+        TBordem_movimentacao;
+        VWpreco;
+        TBunidade_item_estoque.
+*/
+
+IF DBO.OBJECT_ID('VW_BI_Ressuprimento') IS NOT NULL 
+    DROP VIEW VW_BI_Ressuprimento
 GO
 
-CREATE VIEW VW_BI_Ressuprimento_Online WITH ENCRYPTION
+CREATE VIEW VW_BI_Ressuprimento WITH ENCRYPTION
 AS
 
 SELECT DISTINCT      
@@ -28,7 +60,7 @@ FROM
     JOIN TBunidade_item_estoque WITH(NOLOCK) ON TBunidade_item_estoque.DFcod_item_estoque = TBordem_movimentacao.DFcod_item_estoque
         AND TBunidade_item_estoque.DFid_unidade_item_estoque = VWpreco.DFid_unidade_item_estoque
 WHERE
-    TBordem_movimentacao.DFdata_criacao >= CAST(GETDATE() AS DATE)
+    TBordem_movimentacao.DFdata_criacao >= '2024-01-01'
     AND DFtipo_movimento = 'Transferencia'
     AND TBunidade_item_estoque.DFfator_conversao = 1
 
