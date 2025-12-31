@@ -30,7 +30,7 @@
         TBitem_conferencia;
         TBitem_nota_fiscal_entrada;
         TBnota_fiscal_entrada;
-        JOIN TBordem_movimentacao;
+        TBordem_movimentacao;
         VWpreco.
 */
 
