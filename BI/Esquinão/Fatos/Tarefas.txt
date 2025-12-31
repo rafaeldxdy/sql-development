@@ -1,0 +1,22 @@
+[v] Desenvolver views;
+
+    [v] Conferência cega;
+
+        Perguntar ao Rogério: a rotina da conferência cega não é online, tem como ser?
+
+    [v] Armazenamento;
+    [v] Ressuprimento;
+    [v] Separação;
+    [v] Conferência expedição;
+    [v] Montagem de carga.
+
+[] Validar dados;
+
+    [] Conferência cega;
+    [] Armazenamento;
+    [] Ressuprimento;
+    [] Separação;
+    [] Conferência expedição;
+    [] Montagem de carga.
+
+[] Enviar views para desenvolvimento dos dashboards (BI).

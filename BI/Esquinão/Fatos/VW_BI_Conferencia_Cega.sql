@@ -3,7 +3,8 @@
 	AREA...................: Logística
 	MODULO.................: WMS
 	DATA/HORA CRIAÇÂO......: 24/12/2025 16:00 PM
-    DATA/HORA MODIFICAÇÂO..: 31/12/2025 12:07 AM
+    DATA/HORA MODIFICAÇÂO..: 31/12/2025 12:08 PM
+    DATA/HORA REVISÂO......: 31/12/2025 15:48 PM
 	OBJETIVO...............: Relatório analítico de Conferência Cega para BI.
 
     Dados:
@@ -37,35 +38,32 @@ Deus    TBnota_fiscal_entrada,
         TBusuario;
 */
 
-IF DBO.OBJECT_ID('VW_BI_Conferencia_Cega') IS NOT NULL 
-    DROP VIEW VW_BI_Conferencia_Cega
+IF DBO.OBJECT_ID('VW_BI_Conferencia_Cega_Online') IS NOT NULL 
+    DROP VIEW VW_BI_Conferencia_Cega_Online
 GO
 
-CREATE VIEW VW_BI_Conferencia_Cega WITH ENCRYPTION
+CREATE VIEW VW_BI_Conferencia_Cega_Online WITH ENCRYPTION
 AS
 
-SELECT DISTINCT
-    TBconferencia.DFdata_emissao                                                                                           AS [Data conferência],
-    TBficha.DFcod_empresa                                                                                                  AS Empresa,
-    TBficha.DFid_ficha                                                                                                     AS id_ficha,
-    TBficha.DFnum_ficha                                                                                                    AS [Número da Ficha],
-    TBficha.DFdescricao                                                                                                    AS Descrição,
-    COUNT(DISTINCT TBnota_fiscal_entrada.DFnumero)                                                                         AS [Quantidade de Notas],
-    COUNT(TBitem_nota_fiscal_entrada.DFid_item_nota_fiscal_entrada)                                                        AS [Quantidade Itens Nota],
-    COUNT(CASE WHEN TBitem_conferencia.DFqtde_conferido > 0 THEN 1 END)                                                    AS [Quantidade Itens Conferidos],
-    CASE WHEN 
-        TBficha.DFstatus IN ('Endereçadas', 'Criticadas', 'Parcialmente Endereçadas', 'Endereçado Total online', 'Parcialmente Endereçadas Online')
-        AND (COUNT(TBitem_nota_fiscal_entrada.DFid_item_nota_fiscal_entrada) <> COUNT(CASE WHEN TBitem_conferencia.DFqtde_conferido > 0 THEN 1 END))
-        THEN 'Sim' ELSE 'Não' END                                                                                          AS [Devolução],
+WITH Conferencia AS(
+    SELECT DISTINCT
+    FORMAT(TBconferencia.DFdata_emissao, 'dd/MM/yyyy HH:mm')                                                                          AS [Data conferência],
+    TBficha.DFcod_empresa                                                                                                             AS Empresa,
+    TBficha.DFid_ficha                                                                                                                AS id_ficha,
+    TBficha.DFnum_ficha                                                                                                               AS [Número da Ficha],
+    TBficha.DFdescricao                                                                                                               AS Descrição,
+    COUNT(DISTINCT TBnota_fiscal_entrada.DFnumero)                                                                                    AS [Quantidade de Notas],
+    COUNT(DISTINCT TBitem_conferencia.DFid_item_nota_fiscal_entrada)                                                                  AS [Quantidade Itens Conferência],
+    COUNT(DISTINCT CASE 
+        WHEN TBitem_conferencia.DFqtde_conferido > 0 
+        THEN TBitem_conferencia.DFid_item_nota_fiscal_entrada 
+    END)                                                                                                                              AS [Quantidade Itens Conferidos],
     CAST(
-        CASE 
-            WHEN COUNT(TBitem_nota_fiscal_entrada.DFid_item_nota_fiscal_entrada) > 0 THEN
-                 ROUND((CAST(COUNT(CASE WHEN TBitem_conferencia.DFqtde_conferido > 0 THEN 1 END) AS DECIMAL(18, 2)) /
-                 COUNT(TBitem_nota_fiscal_entrada.DFid_item_nota_fiscal_entrada)) * 100, 3)
-            ELSE 0.00
-        END AS DECIMAL(10,3))                                                                                              AS [Percentual Conferido],
-    TBficha.DFstatus                                                                                                       AS [Status da Ficha],
-    TBusuario.DFid_usuario                                                                                                 AS [Usuário ID]
+    (CAST(COUNT(DISTINCT CASE 
+        WHEN TBitem_conferencia.DFqtde_conferido > 0 THEN TBitem_conferencia.DFid_item_nota_fiscal_entrada END) AS DECIMAL(18, 2)) 
+        / NULLIF(COUNT(DISTINCT TBitem_conferencia.DFid_item_nota_fiscal_entrada), 0)) * 100                                          AS DECIMAL(10,3)) AS [Percentual Conferido],
+    TBficha.DFstatus                                                                                                                  AS [Status da Ficha],
+    TBusuario.DFid_usuario                                                                                                            AS [Usuário ID]
 FROM 
     TBficha WITH(NOLOCK)
     JOIN TBconferencia WITH(NOLOCK) ON Tbficha.DFid_ficha = TBconferencia.DFid_ficha
@@ -82,7 +80,7 @@ FROM
 WHERE 
     TBconferencia.DFdata_emissao >= '2024-01-01'
 GROUP BY
-    TBconferencia.DFdata_emissao,
+    FORMAT(TBconferencia.DFdata_emissao, 'dd/MM/yyyy HH:mm'),
     TBficha.DFcod_empresa,
     TBficha.DFnum_ficha,
     TBficha.DFid_ficha,
@@ -90,5 +88,26 @@ GROUP BY
     TBficha.DFstatus,
     TBconferencia.DFid_usuario_critica_qtde,
     TBusuario.DFid_usuario
+)
+
+SELECT 
+    [Data conferência],
+    Empresa,
+    id_ficha,
+    [Número da Ficha],
+    Descrição,
+    [Quantidade de Notas],
+    [Quantidade Itens Conferência],
+    [Quantidade Itens Conferidos],
+    CASE
+        WHEN [Quantidade Itens Conferidos] < [Quantidade Itens Conferência] 
+            AND [Status da Ficha] IN ('Endereçadas', 'Criticadas', 'Parcialmente Endereçadas', 'Endereçado Total online', 'Parcialmente Endereçadas Online')
+        THEN 'Sim'
+        ELSE 'Não' 
+    END AS [Devolução],
+    [Percentual Conferido],
+    [Status da Ficha],
+    [Usuário ID]
+FROM Conferencia
 
 GO
