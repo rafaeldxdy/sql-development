@@ -12,7 +12,7 @@
 
 [] Validar dados;
 
-    [] Conferência cega;
+    [v] Conferência cega;
     [] Armazenamento;
     [] Ressuprimento;
     [] Separação;
@@ -20,3 +20,10 @@
     [] Montagem de carga.
 
 [] Enviar views para desenvolvimento dos dashboards (BI).
+
+    [] Conferência cega;
+    [] Armazenamento;
+    [] Ressuprimento;
+    [] Separação;
+    [] Conferência expedição;
+    [] Montagem de carga.
