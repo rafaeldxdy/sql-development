@@ -4,7 +4,7 @@
     MODULO.................: WMS
     DATA/HORA CRIAÇÃO......: 24/12/2025 15:26 PM
     DATA/HORA MODIFICAÇÃO..: 31/12/2025 11:45 PM
-    DATA/HORA REVISÃO......: 01/01/2026 14:58 PM
+    DATA/HORA REVISÃO......: 01/01/2026 19:51 PM
     OBJETIVO...............: Relatório analítico de armazenamento para BI.
 */
 
@@ -17,6 +17,7 @@ AS
 
     WITH CTEcusto_menor_unidade_item AS (
         SELECT
+            VWpreco.DFcod_empresa AS DFcod_empresa_custo,
             VWpreco.DFcod_item_estoque,
             VWpreco.DFcusto_transferencia,
             VWpreco.DFdata_ultima_alteracao
@@ -43,20 +44,20 @@ AS
             ON VWpreco.DFid_unidade_item_estoque = SBUltima_atualizacao.DFid_unidade_item_estoque
             AND VWpreco.DFdata_ultima_alteracao = SBUltima_atualizacao.DFmaior_data
         WHERE 
-            VWpreco.DFcod_empresa = 7
-            AND TBunidade_item_estoque.DFativo_inativo = 1
+            TBunidade_item_estoque.DFativo_inativo = 1
+            -- AND VWpreco.DFcod_empresa = 7
     ),
 
     CTEenderecamento AS (
         SELECT 
+            TBordem_movimentacao.DFcod_empresa AS DFcod_empresa_movimentacao,
             TBconferencia.DFdata_emissao AS DFdata_recebimento,
             TBficha.DFid_ficha,
-            TBficha.DFnum_ficha, -- Só para me ajudar a validar os dados, apagar depois
             ISNULL(TBnota_fiscal_entrada.DFcod_fornecedor_emitente, TBnota_fiscal_entrada.DFcod_empresa_emitente) AS DFcod_entidade_emitente,
             TBnota_fiscal_entrada.DFid_nota_fiscal_entrada,
             TBordem_movimentacao.DFcod_item_estoque,
             (TBitem_nota_fiscal_entrada.DFqtde * TBunidade_item_estoque.DFfator_conversao) AS DFqtde_nota_fiscal,
-            TBitem_conferencia.DFqtde_definitivo AS DFqtde_recebido,
+            TBitem_conferencia.DFqtde_conferido AS DFqtde_recebido,
             TBconferencia.DFid_usuario_critica_qtde AS DFid_usuario_critica,
             TBordem_movimentacao.DFdata_criacao,
             TBordem_movimentacao.DFid_usuario_criacao AS DFid_usuario_enderecamento,
@@ -83,12 +84,14 @@ AS
         WHERE 
             DFtipo_movimento = 'Entrada'
             AND TBordem_movimentacao.DFdata_criacao >= CAST(GETDATE() AS DATE)
+            -- AND TBordem_movimentacao.DFcod_empresa = 7
     )
 
     SELECT 
+        CTEenderecamento.DFcod_empresa_movimentacao,
+        CTEcusto_menor_unidade_item.DFcod_empresa_custo,
         CTEenderecamento.DFdata_recebimento,
         CTEenderecamento.DFid_ficha,
-        CTEenderecamento.DFnum_ficha, -- Só para me ajudar a validar os dados, apagar depois
         CTEenderecamento.DFcod_entidade_emitente,
         CTEenderecamento.DFid_nota_fiscal_entrada,
         CTEenderecamento.DFcod_item_estoque,
